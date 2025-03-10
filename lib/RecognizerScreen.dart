@@ -26,41 +26,24 @@ class _RecScreenState extends State<RecScreen> {
 
   void doTextRec() async {
     InputImage inputImage = InputImage.fromFile(widget.image);
-    final RecognizedText recognizedText =
-        await textRecognizer.processImage(inputImage);
+    final RecognizedText recognizedText =await textRecognizer.processImage(inputImage);
+    // print(recognizedText);
 
-    List<String> lines = recognizedText.text.split("\n");
-    List<String> extractedData = [];
+    String text = recognizedText.text;
+    for (TextBlock block in recognizedText.blocks) {
+      final Rect rect = block.boundingBox;
+      final List<Point<int>> cornerPoints = block.cornerPoints;
+      final String text = block.text;
+      final List<String> languages = block.recognizedLanguages;
 
-    for (int i = 0; i < lines.length - 1; i++) {
-      String line = lines[i].trim();
-      String nextLine = lines[i + 1].trim();
-
-      // Split multiple subjects in the same line
-      List<String> subjects =
-          line.split(RegExp(r'\s{1,}')); // Splitting on multiple spaces
-      List<String> slots =
-          nextLine.split(RegExp(r'\s{1,}')); // Corresponding slots
-
-      for (int j = 0; j < subjects.length; j++) {
-        if (j < slots.length) {
-          extractedData.add("${subjects[j]}\n${slots[j]}");
-        } else {
-          extractedData
-              .add(subjects[j]); // If there's no slot, just keep the subject
+      for (TextLine line in block.lines) {
+        // Same getters as TextBlock
+        for (TextElement element in line.elements) {
+          // Same getters as TextBlock
         }
       }
-
-      i++; // Skip the next line since it's already processed
     }
-
-    // Convert list to a readable string
-    result = extractedData.join("\n\n");
-
-    // Print to console
-    print("Formatted Timetable Data:");
-    print(result);
-
+    result = text;
     // Update UI as well (optional)
     setState(() {
       result;
